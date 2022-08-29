@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">JetQuitSmoking</string>
+
+
+    <string name="validation_error_name">The name must consist of at least three characters.</string>
+    <string name="validation_error_require_not_empty">Required field</string>
+    <string name="sign_up">Sign up</string>
+    <string name="sign_up_desc">Tell us a little about your story</string>
+    <string name="save">Save</string>
+    <string name="name">Name</string>
+    <string name="cigarettes_smoked_per_day">Cigarettes smoked per day</string>
+    <string name="cigarettes_in_a_pack">Cigarettes in a pack</string>
+    <string name="price_per_pack">Price per pack</string>
+</resources>
