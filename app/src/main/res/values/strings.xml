@@ -11,4 +11,8 @@
     <string name="cigarettes_smoked_per_day">Cigarettes smoked per day</string>
     <string name="cigarettes_in_a_pack">Cigarettes in a pack</string>
     <string name="price_per_pack">Price per pack</string>
+    <string name="welcome_back">Hi, %1$s. Welcome Back </string>
+    <string name="day">%1$s. Day</string>
+    <string name="reminder">Reminder</string>
+    <string name="you_can_smoke">You can smoke %1$s cigarette</string>
 </resources>

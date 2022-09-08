@@ -1,4 +1,4 @@
-package com.enciyo.jetquitsmoking
+package com.enciyo.jetquitsmoking.util
 
 import androidx.compose.runtime.*
 import kotlinx.coroutines.flow.MutableStateFlow

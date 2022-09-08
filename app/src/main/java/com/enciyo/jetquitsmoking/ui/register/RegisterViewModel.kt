@@ -6,7 +6,7 @@ import com.enciyo.data.repo.Repository
 import com.enciyo.data.entity.Account
 import com.enciyo.jetquitsmoking.component.VALIDATION_NAME
 import com.enciyo.jetquitsmoking.component.VALIDATION_NOT_EMPTY
-import com.enciyo.jetquitsmoking.validationState
+import com.enciyo.jetquitsmoking.util.validationState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

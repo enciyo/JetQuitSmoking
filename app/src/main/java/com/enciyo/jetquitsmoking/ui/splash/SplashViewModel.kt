@@ -16,7 +16,6 @@ class SplashViewModel @Inject constructor(
     private val accountRepository: Repository
 ) : ViewModel() {
     companion object {
-        // TODO: Move to build.gradle.kts
         private const val DELAY_SPLASH = 2000L
     }
 

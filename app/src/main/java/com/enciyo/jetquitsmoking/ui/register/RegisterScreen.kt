@@ -42,9 +42,19 @@ fun RegisterScreen(
     val state by vm.state.collectAsStateWithLifecycle()
     val currentNavigateToMain by rememberUpdatedState(navigateToMain)
 
+
     LaunchedEffect(state) {
         if (state.isLoggedIn) currentNavigateToMain()
     }
+
+    LaunchedEffect(Unit){
+        vm.name.onValueChange.invoke("name")
+        vm.pricePerPack.onValueChange.invoke("2")
+        vm.countInAPack.onValueChange.invoke("2")
+        vm.smokedPerDay.onValueChange.invoke("900")
+        vm.onEvent(RegisterUiEvent.OnSave)
+    }
+
 
     Box(
         modifier = modifier

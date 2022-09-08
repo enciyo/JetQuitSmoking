@@ -16,14 +16,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalTextInputService
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.enciyo.data.entity.Task
+import com.enciyo.jetquitsmoking.R
 import com.enciyo.jetquitsmoking.ui.theme.TASK_ICONS
+import java.util.function.BiFunction
 
 
 private val IMAGE_SIZE get() = 60.dp
@@ -44,10 +48,7 @@ fun MainScreen(
     val headerSpan: LazyGridItemSpanScope.() -> GridItemSpan = { GridItemSpan(maxCurrentLineSpan) }
     val columns = GridCells.Fixed(2)
 
-    LazyVerticalGrid(
-        columns = columns,
-        modifier = modifier,
-    ) {
+    LazyVerticalGrid(columns = columns, modifier = modifier) {
         item(span = headerSpan) {
             Header(userName = state.account?.name.orEmpty())
         }
@@ -55,33 +56,40 @@ fun MainScreen(
             Task(item = item, index = index) { onTaskDetail(item) }
         }
     }
+
 }
 
 @Composable
 private fun Header(
     modifier: Modifier = Modifier,
-    userName: String,
+    userName: String
 ) {
     Text(
-        text = "Hi, $userName\nWelcome Back.",
+        text = stringResource(id = R.string.welcome_back, userName),
         modifier = modifier
             .background(
-                MaterialTheme.colors.primary,
+                color = MaterialTheme.colors.primary,
                 shape = RoundedCornerShape(bottomStartPercent = 0, bottomEndPercent = 100)
             )
             .padding(vertical = 24.dp, horizontal = 12.dp),
         fontSize = MaterialTheme.typography.h6.fontSize,
         color = MaterialTheme.colors.onPrimary,
     )
-
 }
 
 
 @Composable
-private fun Task(modifier: Modifier = Modifier, item: Task, index: Int, onClick: () -> Unit) {
+private fun Task(
+    modifier: Modifier = Modifier,
+    item: Task,
+    index: Int,
+    onClick: () -> Unit
+) {
     val isActive = item.taskId == 1
     val color = if (isActive) MaterialTheme.colors.primary
     else MaterialTheme.colors.secondary
+
+    LocalTextInputService.current?.hideSoftwareKeyboard()
 
     Column(
         modifier = modifier.padding(12.dp),
@@ -108,7 +116,7 @@ private fun Task(modifier: Modifier = Modifier, item: Task, index: Int, onClick:
             )
         }
         Text(
-            text = "${item.taskId}. Day",
+            text = stringResource(id = R.string.day, item.taskId),
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .background(

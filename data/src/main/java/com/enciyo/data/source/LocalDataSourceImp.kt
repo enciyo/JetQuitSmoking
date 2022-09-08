@@ -41,10 +41,7 @@ class LocalDataSourceImp @Inject constructor(
         onIoThread { taskPeriodsDao.insertAll(*taskPeriods) }
 
     override suspend fun taskPeriodsById(id: Int): TaskPeriods =
-        onIoThread {
-            taskPeriodsDao.taskPeriodsById(id)
-                ?: TaskPeriods(id, listOf())
-        }
+        onIoThread { taskPeriodsDao.taskPeriodsById(id) ?: TaskPeriods(id, listOf()) }
 
 
     private suspend fun <T> onIoThread(block: suspend () -> T) =

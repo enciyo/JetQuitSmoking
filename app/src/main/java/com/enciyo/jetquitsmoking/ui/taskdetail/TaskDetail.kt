@@ -19,6 +19,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.enciyo.data.entity.Period
+import kotlinx.datetime.LocalDateTime
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
@@ -112,7 +113,7 @@ private fun Item(modifier: Modifier = Modifier, period: Period) {
                 .align(Alignment.CenterHorizontally)
         ) {
             Text(
-                text = period.time,
+                text = LocalDateTime.parse(period.time).time.toString(),
                 color = MaterialTheme.colors.onPrimary,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.align(Alignment.Center)
