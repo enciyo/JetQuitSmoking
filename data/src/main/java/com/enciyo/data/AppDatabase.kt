@@ -10,13 +10,19 @@ import com.enciyo.data.dao.converters.TaskPeriodsConverter
 import com.enciyo.data.entity.Account
 import com.enciyo.data.entity.Task
 import com.enciyo.data.entity.TaskPeriods
+import com.enciyo.data.entity.converters.LocalDateConverter
+import com.enciyo.data.entity.converters.LocalDateTimeConvert
 
 @Database(
     entities = [Account::class, Task::class, TaskPeriods::class],
     exportSchema = false,
     version = 1
 )
-@TypeConverters(TaskPeriodsConverter::class)
+@TypeConverters(
+    TaskPeriodsConverter::class,
+    LocalDateTimeConvert::class,
+    LocalDateConverter::class
+)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun accountDao(): AccountDao
     abstract fun taskDao(): TaskDao

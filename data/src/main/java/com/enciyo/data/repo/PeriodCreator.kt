@@ -30,9 +30,9 @@ class PeriodCreator @Inject constructor(
         )
         val taskPeriods = (1..task.needSmokeCount)
             .map {
-                val date = startedDate.toString()
-                startedDate = startedDate.addMinute(perMinute)
-                Period(id = it, time = date)
+                Period(id = it, time = startedDate.toString()).also {
+                    startedDate = startedDate.addMinute(perMinute)
+                }
             }
             .toList()
             .let { TaskPeriods(taskId = task.taskId, period = it) }

@@ -5,7 +5,8 @@ plugins {
     id("com.google.dagger.hilt.android")
 }
 apply<plugins.AndroidProjectPlugin>()
-dependencies{
+dependencies {
     implementation(project(":data"))
+    implementation(project(":shared"))
     implementation(kotlin("reflect"))
 }

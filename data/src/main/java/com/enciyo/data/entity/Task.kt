@@ -2,6 +2,7 @@ package com.enciyo.data.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.datetime.LocalDate
 
 @Entity(
     tableName = "task"
@@ -9,7 +10,8 @@ import androidx.room.PrimaryKey
 data class Task(
     @PrimaryKey(autoGenerate = false)
     val taskId: Int,
-    val needSmokeCount: Int
+    val needSmokeCount: Int,
+    val time: LocalDate,
 )
 
 

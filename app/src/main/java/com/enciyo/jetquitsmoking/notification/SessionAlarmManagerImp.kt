@@ -7,10 +7,10 @@ import android.os.Build
 import androidx.core.app.AlarmManagerCompat
 import com.enciyo.data.SessionAlarmManager
 import com.enciyo.jetquitsmoking.R
+import com.enciyo.shared.epochSeconds
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -22,11 +22,10 @@ class SessionAlarmManagerImp @Inject constructor(
 
     override operator fun invoke(
         taskId: Int,
-        time: String,
+        time: LocalDateTime,
         smokeCount: Int,
     ) {
-        val triggerAtMillis = LocalDateTime.parse(time).toInstant(TimeZone.currentSystemDefault())
-            .epochSeconds
+        val triggerAtMillis = time.epochSeconds
 
         val intent = NotificationReceiver.getIntent(
             context,
@@ -35,11 +34,11 @@ class SessionAlarmManagerImp @Inject constructor(
         )
         val operation =
             PendingIntent.getBroadcast(
-            context,
-            taskId,
-            intent,
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_IMMUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
-        )
+                context,
+                taskId,
+                intent,
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_IMMUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
+            )
 
         AlarmManagerCompat.setExactAndAllowWhileIdle(
             alarmManager,

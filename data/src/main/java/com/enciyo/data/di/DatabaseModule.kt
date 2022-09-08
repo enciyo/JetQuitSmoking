@@ -3,6 +3,8 @@ package com.enciyo.data.di
 import android.content.Context
 import androidx.room.Room
 import com.enciyo.data.AppDatabase
+import com.enciyo.data.entity.converters.LocalDateConverter
+import com.enciyo.data.entity.converters.LocalDateTimeConvert
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,8 +21,14 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideAppDatabase(
-        @ApplicationContext context: Context
-    ) = Room.databaseBuilder(context, AppDatabase::class.java, "app_name_v1.1.${UUID.randomUUID().toString()}")
+        @ApplicationContext context: Context,
+        localDateTimeConvert: LocalDateTimeConvert,
+        localDateConverter: LocalDateConverter,
+    ) = Room.databaseBuilder(context,
+        AppDatabase::class.java,
+        "app_name_v1.1.${UUID.randomUUID()}")
+        .addTypeConverter(localDateConverter)
+        .addTypeConverter(localDateTimeConvert)
         .fallbackToDestructiveMigration()
         .build()
 
