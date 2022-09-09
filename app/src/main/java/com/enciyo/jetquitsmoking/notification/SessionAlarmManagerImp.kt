@@ -26,7 +26,6 @@ class SessionAlarmManagerImp @Inject constructor(
         smokeCount: Int,
     ) {
         val triggerAtMillis = time.epochSeconds
-
         val intent = NotificationReceiver.getIntent(
             context,
             context.getString(R.string.reminder),

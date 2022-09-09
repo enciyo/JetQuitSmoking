@@ -10,9 +10,23 @@ import androidx.core.R
 import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
 import androidx.core.os.bundleOf
+import com.enciyo.data.repo.Repository
 import com.enciyo.jetquitsmoking.util.intent
+import com.enciyo.shared.ApplicationScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class NotificationReceiver : BroadcastReceiver() {
+
+    @Inject
+    lateinit var repopsitory: Repository
+
+    @Inject
+    @ApplicationScope
+    lateinit var scope: CoroutineScope
+
+
     companion object {
         private const val NOTIFICATION_ID = 26
         private const val NOTIFICATION_CHANNEL_ID = "261"
@@ -53,5 +67,8 @@ class NotificationReceiver : BroadcastReceiver() {
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()
         manager.notify(NOTIFICATION_ID, notification)
+        scope.launch {
+            repopsitory.setNextAlarm()
+        }
     }
 }

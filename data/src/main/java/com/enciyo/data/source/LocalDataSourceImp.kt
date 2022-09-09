@@ -1,11 +1,11 @@
 package com.enciyo.data.source
 
 import com.enciyo.data.dao.AccountDao
+import com.enciyo.data.dao.PeriodDao
 import com.enciyo.data.dao.TaskDao
-import com.enciyo.data.dao.TaskPeriodsDao
 import com.enciyo.data.entity.Account
+import com.enciyo.data.entity.Period
 import com.enciyo.data.entity.Task
-import com.enciyo.data.entity.TaskPeriods
 import com.enciyo.shared.IoDispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -16,7 +16,7 @@ class LocalDataSourceImp @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val accountDao: AccountDao,
     private val taskDao: TaskDao,
-    private val taskPeriodsDao: TaskPeriodsDao
+    private val periodDao: PeriodDao,
 ) : LocalDataSource {
 
     override suspend fun save(account: Account) =
@@ -37,11 +37,13 @@ class LocalDataSourceImp @Inject constructor(
     override suspend fun tasks(): List<Task> =
         onIoThread { taskDao.tasks() }
 
-    override suspend fun saveAll(vararg taskPeriods: TaskPeriods) =
-        onIoThread { taskPeriodsDao.insertAll(*taskPeriods) }
+    override suspend fun taskPeriodsById(id: Int) = onIoThread {
+        taskDao.getTaskWithPeriods(id)
+    }
 
-    override suspend fun taskPeriodsById(id: Int): TaskPeriods =
-        onIoThread { taskPeriodsDao.taskPeriodsById(id) ?: TaskPeriods(id, listOf()) }
+    override suspend fun saveAll(vararg period: Period) = onIoThread {
+        periodDao.insert(*period)
+    }
 
 
     private suspend fun <T> onIoThread(block: suspend () -> T) =

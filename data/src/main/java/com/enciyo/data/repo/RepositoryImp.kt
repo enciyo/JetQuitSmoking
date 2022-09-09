@@ -2,8 +2,9 @@ package com.enciyo.data.repo
 
 import com.enciyo.data.SessionAlarmManager
 import com.enciyo.data.entity.Account
+import com.enciyo.data.entity.Period
 import com.enciyo.data.entity.Task
-import com.enciyo.data.entity.TaskPeriods
+import com.enciyo.data.entity.TaskWithPeriods
 import com.enciyo.data.source.LocalDataSource
 import com.enciyo.shared.IoDispatcher
 import kotlinx.coroutines.CoroutineDispatcher
@@ -28,8 +29,8 @@ class RepositoryImp @Inject constructor(
         val tasks = createTasks()
         tasks.forEach { task ->
             val taskPeriod = createTaskPeriod(task)
-            if (task.taskId == 0 && taskPeriod != null) {
-                val period = taskPeriod.period.first()
+            if (task.taskId == 0 && taskPeriod.isNotEmpty()) {
+                val period = taskPeriod.first()
                 sessionAlarmManager(task.taskId, period.time, task.needSmokeCount)
             }
         }
@@ -48,17 +49,22 @@ class RepositoryImp @Inject constructor(
     }
 
 
-    private suspend fun createTaskPeriod(task: Task): TaskPeriods? {
-        if (task.needSmokeCount <= 0) return null
+    private suspend fun createTaskPeriod(task: Task): List<Period> {
+        if (task.needSmokeCount <= 0) return listOf()
         val taskPeriod = periodCreator(task)
-        localDataSource.saveAll(taskPeriod)
+        localDataSource.saveAll(*taskPeriod.toTypedArray())
         return taskPeriod
     }
 
 
+    override suspend fun setNextAlarm() {
+        //TODO("Create alarm for next sesion")
+    }
+
     override suspend fun tasks(): List<Task> = localDataSource.tasks()
 
-    override suspend fun taskPeriodsById(id: Int): TaskPeriods = localDataSource.taskPeriodsById(id)
+    override suspend fun taskPeriodsById(id: Int): TaskWithPeriods =
+        localDataSource.taskPeriodsById(id)
 
     override suspend fun account(): Account = localDataSource.account()
 

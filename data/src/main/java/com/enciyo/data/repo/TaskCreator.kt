@@ -2,6 +2,7 @@ package com.enciyo.data.repo
 
 import com.enciyo.data.entity.Task
 import com.enciyo.shared.IoDispatcher
+import com.enciyo.shared.currentSystemTimeZone
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.*
@@ -15,7 +16,9 @@ class TaskCreator @Inject constructor(
 ) {
 
     private val clock = Clock.System.now()
-    private val timeZone = TimeZone.currentSystemDefault()
+        .minus(1, DateTimeUnit.DAY, currentSystemTimeZone)
+
+    private val timeZone = currentSystemTimeZone
 
     suspend operator fun invoke(smokedPerDay: Int): List<Task> = withContext(ioDispatcher) {
         var mod = smokedPerDay.mod(RepositoryImp.TASK_COUNT)
@@ -27,7 +30,6 @@ class TaskCreator @Inject constructor(
                 val id = (RepositoryImp.TASK_COUNT + 1) - it
                 val date = clock.plus(id, DateTimeUnit.DAY, timeZone = timeZone)
                     .toLocalDateTime(timeZone)
-                    .date
                 wrappedSmoked = wrappedSmoked - subtract - extraForMod
                 Task(id, wrappedSmoked, date)
             }

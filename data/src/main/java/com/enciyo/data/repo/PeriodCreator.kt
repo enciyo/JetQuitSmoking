@@ -2,8 +2,9 @@ package com.enciyo.data.repo
 
 import com.enciyo.data.entity.Period
 import com.enciyo.data.entity.Task
-import com.enciyo.data.entity.TaskPeriods
+import com.enciyo.data.entity.TaskWithPeriods
 import com.enciyo.shared.IoDispatcher
+import com.enciyo.shared.currentSystemTimeZone
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.*
@@ -14,13 +15,13 @@ import javax.inject.Singleton
 class PeriodCreator @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) {
-    private val timeZone = TimeZone.currentSystemDefault()
-    private val clock = Clock.System.now().minus(1, DateTimeUnit.DAY, timeZone)
+    private val clock = Clock.System.now().minus(1, DateTimeUnit.DAY, currentSystemTimeZone)
 
-    suspend operator fun invoke(task: Task): TaskPeriods = withContext(ioDispatcher) {
-        val newDate = clock.plus(task.taskId, DateTimeUnit.DAY, timeZone).toLocalDateTime(timeZone)
+    suspend operator fun invoke(task: Task): List<Period> = withContext(ioDispatcher) {
+        val newDate = clock.plus(task.taskId, DateTimeUnit.DAY, currentSystemTimeZone).toLocalDateTime(
+            currentSystemTimeZone)
         val perMinute = RepositoryImp.DAILY_MINUTES / task.needSmokeCount
-        var startedDate = LocalDateTime(
+        var startDate = LocalDateTime(
             hour = 8,
             minute = 1,
             second = 0,
@@ -28,14 +29,15 @@ class PeriodCreator @Inject constructor(
             month = newDate.month,
             dayOfMonth = newDate.dayOfMonth
         )
+
+
         val taskPeriods = (1..task.needSmokeCount)
-            .map {
-                Period(id = it, time = startedDate.toString()).also {
-                    startedDate = startedDate.addMinute(perMinute)
+            .map { id ->
+                Period(time = startDate, taskCreatorId = task.taskId).also {
+                    startDate.addMinute(perMinute).let { startDate = it }
                 }
             }
             .toList()
-            .let { TaskPeriods(taskId = task.taskId, period = it) }
         return@withContext taskPeriods
     }
 

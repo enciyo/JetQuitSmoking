@@ -1,4 +1,4 @@
-package com.enciyo.data.entity.converters
+package com.enciyo.data.dao.converters
 
 import androidx.room.ProvidedTypeConverter
 import androidx.room.TypeConverter
@@ -7,8 +7,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 
-@Singleton
 @ProvidedTypeConverter
+@Singleton
 class LocalDateTimeConvert @Inject constructor() {
     @TypeConverter
     fun fromLocalDateTime(time: LocalDateTime) = time.toString()

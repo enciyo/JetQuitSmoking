@@ -13,6 +13,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,7 +28,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.enciyo.data.entity.Task
 import com.enciyo.jetquitsmoking.R
 import com.enciyo.jetquitsmoking.ui.theme.TASK_ICONS
-import java.util.function.BiFunction
+import com.enciyo.shared.isSameDay
+import com.enciyo.shared.today
 
 
 private val IMAGE_SIZE get() = 60.dp
@@ -39,7 +41,7 @@ private val TASK_SIZE get() = 120.dp
 fun MainScreen(
     modifier: Modifier = Modifier,
     vm: MainViewModel = hiltViewModel(),
-    onTaskDetail: (Task) -> Unit
+    onTaskDetail: (Task) -> Unit,
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
     val span: LazyGridItemSpanScope.(index: Int, item: Any) -> GridItemSpan = { index, item ->
@@ -47,13 +49,16 @@ fun MainScreen(
     }
     val headerSpan: LazyGridItemSpanScope.() -> GridItemSpan = { GridItemSpan(maxCurrentLineSpan) }
     val columns = GridCells.Fixed(2)
+    val now by remember {
+        mutableStateOf(today().date)
+    }
 
     LazyVerticalGrid(columns = columns, modifier = modifier) {
         item(span = headerSpan) {
             Header(userName = state.account?.name.orEmpty())
         }
         itemsIndexed(state.tasks, span = span) { index, item ->
-            Task(item = item, index = index) { onTaskDetail(item) }
+            Task(item = item, index = index, isActive = now.isSameDay(item.time.date)) { onTaskDetail(item) }
         }
     }
 
@@ -62,7 +67,7 @@ fun MainScreen(
 @Composable
 private fun Header(
     modifier: Modifier = Modifier,
-    userName: String
+    userName: String,
 ) {
     Text(
         text = stringResource(id = R.string.welcome_back, userName),
@@ -83,9 +88,9 @@ private fun Task(
     modifier: Modifier = Modifier,
     item: Task,
     index: Int,
-    onClick: () -> Unit
+    isActive: Boolean,
+    onClick: () -> Unit,
 ) {
-    val isActive = item.taskId == 1
     val color = if (isActive) MaterialTheme.colors.primary
     else MaterialTheme.colors.secondary
 
@@ -101,7 +106,7 @@ private fun Task(
                 .align(Alignment.CenterHorizontally)
                 .background(color, shape = CircleShape)
                 .clickable(
-                    //enabled = isActive,
+                    enabled = isActive,
                     interactionSource = remember { MutableInteractionSource() },
                     indication = rememberRipple(bounded = false),
                     onClick = onClick

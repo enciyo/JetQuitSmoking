@@ -1,11 +1,18 @@
 package com.enciyo.shared
 
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toInstant
+import kotlinx.datetime.*
 
+
+val currentSystemTimeZone = TimeZone.currentSystemDefault()
+
+fun today() = Clock.System.now().toLocalDateTime(currentSystemTimeZone)
+
+fun LocalDate.isSameDay(localDateTime: LocalDate) = compareTo(localDateTime) == 0
 
 val LocalDateTime.epochSeconds
     get() = this
-        .toInstant(TimeZone.currentSystemDefault())
+        .toInstant(currentSystemTimeZone)
         .epochSeconds
+
+
+

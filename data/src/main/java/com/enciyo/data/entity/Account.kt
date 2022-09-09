@@ -12,6 +12,6 @@ data class Account(
     val name: String,
     val cigarettesSmokedPerDay: Int,
     val cigarettesInAPack: Int,
-    val pricePerPack: Int
+    val pricePerPack: Int,
 )
 
