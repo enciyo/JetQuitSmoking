@@ -79,16 +79,7 @@ fun NavGraph(
                 }
             }
         }
-
-        composable(Destinations.TaskDetail.route) { backStackEntry ->
-            TaskDetailScreen(
-                taskId = backStackEntry.arguments?.getString("taskId")?.toIntOrNull()
-                    ?: throw IllegalStateException("Not found"),
-                needSmokeCount = backStackEntry.arguments?.getString("needSmokeCount")
-                    ?.toIntOrNull()
-                    ?: throw IllegalStateException("Not found")
-            )
-        }
+        composable(Destinations.TaskDetail.route) { TaskDetailScreen() }
     }
 }
 

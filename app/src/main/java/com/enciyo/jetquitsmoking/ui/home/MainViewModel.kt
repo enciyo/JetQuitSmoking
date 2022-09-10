@@ -7,9 +7,8 @@ import com.enciyo.data.entity.Task
 import com.enciyo.data.repo.Repository
 import com.enciyo.shared.today
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import javax.inject.Inject
@@ -20,28 +19,16 @@ class MainViewModel @Inject constructor(
     private val repository: Repository,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(MainUiState())
-    val state get() = _state.asStateFlow()
-
-    init {
-        tasks()
-        account()
-    }
-
-    private fun tasks() {
-        viewModelScope.launch {
-            val tasks = repository.tasks()
-            _state.update { it.copy(tasks = tasks) }
-        }
-    }
-
-    private fun account() {
-        viewModelScope.launch {
-            val account = repository.account()
-            _state.update { it.copy(userName = account.name) }
-        }
-    }
-
+    val state = combine(
+        flow = repository.tasks(),
+        flow2 = repository.account().map { it.name },
+        transform = ::MainUiState
+    )
+        .stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = MainUiState()
+        )
 }
 
 data class MainUiState(

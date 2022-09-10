@@ -15,13 +15,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
-    private val repository: Repository
+    private val repository: Repository,
 ) : ViewModel() {
 
     val name = validationState(validator = VALIDATION_NAME)
-    val smokedPerDay = validationState(validator = VALIDATION_NOT_EMPTY)
-    val countInAPack = validationState(validator = VALIDATION_NOT_EMPTY)
-    val pricePerPack = validationState(validator = VALIDATION_NOT_EMPTY)
+    val smokedPerDay = validationState()
+    val countInAPack = validationState()
+    val pricePerPack = validationState()
 
     private val _state = MutableStateFlow(RegisterUiState())
     val state = _state.asStateFlow()

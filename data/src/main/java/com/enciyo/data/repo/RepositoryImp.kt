@@ -8,6 +8,7 @@ import com.enciyo.data.entity.TaskWithPeriods
 import com.enciyo.data.source.LocalDataSource
 import com.enciyo.shared.IoDispatcher
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -61,12 +62,12 @@ class RepositoryImp @Inject constructor(
         //TODO("Create alarm for next sesion")
     }
 
-    override suspend fun tasks(): List<Task> = localDataSource.tasks()
+    override fun tasks() = flow { emit(localDataSource.tasks()) }
 
-    override suspend fun taskPeriodsById(id: Int): TaskWithPeriods =
-        localDataSource.taskPeriodsById(id)
+    override fun taskPeriodsById(id: Int) = flow { emit(localDataSource.taskPeriodsById(id)) }
 
-    override suspend fun account(): Account = localDataSource.account()
+
+    override fun account() = flow { emit(localDataSource.account()) }
 
     private suspend fun <T> onIoThread(block: suspend () -> T) =
         withContext(ioDispatcher) { block.invoke() }

@@ -1,11 +1,13 @@
 package com.enciyo.jetquitsmoking.util
 
 import androidx.compose.runtime.*
+import com.enciyo.jetquitsmoking.component.VALIDATION_NAME
+import com.enciyo.jetquitsmoking.component.VALIDATION_NOT_EMPTY
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 fun validationState(
-    validator: (String) -> Boolean = { true },
+    validator: (String) -> Boolean = VALIDATION_NOT_EMPTY,
 ) = ValidationState(validator)
 
 @Stable

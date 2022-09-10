@@ -25,8 +25,6 @@ import com.enciyo.jetquitsmoking.R
 fun TaskDetailScreen(
     modifier: Modifier = Modifier,
     vm: TaskDetailViewModel = hiltViewModel(),
-    taskId: Int,
-    needSmokeCount: Int,
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
     val lazyListState = rememberLazyListState()
@@ -35,12 +33,10 @@ fun TaskDetailScreen(
         lazyListState.scrollToItem(state.activePeriodIndex)
     }
 
-    LaunchedEffect(Unit) { vm.taskId(taskId) }
-
-    if (needSmokeCount > 0) {
+    if (vm.needSmokeCount.toInt() > 0) {
         LazyColumn(modifier = modifier, state = lazyListState) {
             item {
-                Header(needSmokeCount = needSmokeCount)
+                Header(needSmokeCount = vm.needSmokeCount)
             }
             itemsIndexed(state.taskPeriods) { index, item ->
                 val isActive = remember { state.activePeriodIndex == index }
@@ -82,7 +78,7 @@ private fun NoNeedSmokeToday(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun Header(modifier: Modifier = Modifier, needSmokeCount: Int) {
+private fun Header(modifier: Modifier = Modifier, needSmokeCount: String) {
     Text(
         text = "In this task\nyou will smoke $needSmokeCount cigarettes.",
         modifier = modifier
@@ -111,7 +107,7 @@ private fun Item(
     ) {
         Box(
             modifier = Modifier
-                .size(width = 30.dp, height = 6.dp)
+                .size(width = 6.dp, height = 30.dp)
                 .background(color = color)
                 .align(Alignment.CenterHorizontally)
         )
