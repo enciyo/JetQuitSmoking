@@ -15,4 +15,5 @@
     <string name="day">%1$s. Day</string>
     <string name="reminder">Reminder</string>
     <string name="you_can_smoke">You can smoke %1$s cigarette</string>
+    <string name="today_you_wont_smoke">Today you won\'t smoke.</string>
 </resources>

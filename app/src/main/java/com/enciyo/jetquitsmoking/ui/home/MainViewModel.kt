@@ -5,17 +5,19 @@ import androidx.lifecycle.viewModelScope
 import com.enciyo.data.entity.Account
 import com.enciyo.data.entity.Task
 import com.enciyo.data.repo.Repository
+import com.enciyo.shared.today
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 import javax.inject.Inject
 
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val repository: Repository
+    private val repository: Repository,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(MainUiState())
@@ -36,7 +38,7 @@ class MainViewModel @Inject constructor(
     private fun account() {
         viewModelScope.launch {
             val account = repository.account()
-            _state.update { it.copy(account = account) }
+            _state.update { it.copy(userName = account.name) }
         }
     }
 
@@ -44,5 +46,6 @@ class MainViewModel @Inject constructor(
 
 data class MainUiState(
     val tasks: List<Task> = listOf(),
-    val account: Account? = null
+    val userName: String = "",
+    val today: LocalDate = today().date,
 )

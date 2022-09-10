@@ -2,9 +2,7 @@ package com.enciyo.jetquitsmoking.ui.taskdetail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
@@ -12,13 +10,15 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.enciyo.data.entity.Period
-import kotlinx.coroutines.launch
+import com.enciyo.jetquitsmoking.R
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
@@ -42,9 +42,11 @@ fun TaskDetailScreen(
             item {
                 Header(needSmokeCount = needSmokeCount)
             }
-
             itemsIndexed(state.taskPeriods) { index, item ->
-                Item(period = item, isActive = state.activePeriodIndex == index)
+                val isActive = remember { state.activePeriodIndex == index }
+                val color =
+                    if (isActive) MaterialTheme.colors.primary else MaterialTheme.colors.secondary
+                Item(period = item, color = color)
             }
 
         }
@@ -69,7 +71,7 @@ private fun NoNeedSmokeToday(modifier: Modifier = Modifier) {
                 )
         ) {
             Text(
-                text = "Today you won't smoke.",
+                text = stringResource(R.string.today_you_wont_smoke),
                 color = MaterialTheme.colors.onPrimary,
                 modifier = Modifier
                     .align(Alignment.Center),
@@ -86,7 +88,7 @@ private fun Header(modifier: Modifier = Modifier, needSmokeCount: Int) {
         modifier = modifier
             .fillMaxWidth()
             .background(
-                MaterialTheme.colors.primary,
+                color = MaterialTheme.colors.primary,
                 shape = RoundedCornerShape(bottomStartPercent = 0, bottomEndPercent = 100)
             )
             .padding(vertical = 24.dp, horizontal = 12.dp),
@@ -98,22 +100,24 @@ private fun Header(modifier: Modifier = Modifier, needSmokeCount: Int) {
 
 
 @Composable
-private fun Item(modifier: Modifier = Modifier, period: Period, isActive: Boolean = false) {
-    val color = if (isActive) MaterialTheme.colors.primary else MaterialTheme.colors.secondary
+private fun Item(
+    modifier: Modifier = Modifier,
+    period: Period,
+    color: Color,
+) {
     Column(
         modifier = modifier
             .fillMaxWidth()
     ) {
         Box(
             modifier = Modifier
-                .height(30.dp)
-                .width(6.dp)
+                .size(width = 30.dp, height = 6.dp)
                 .background(color = color)
                 .align(Alignment.CenterHorizontally)
         )
         Box(
             modifier = Modifier
-                .background(color, CircleShape)
+                .background(color = color, shape = CircleShape)
                 .size(120.dp)
                 .align(Alignment.CenterHorizontally)
         ) {
