@@ -12,6 +12,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -31,45 +32,42 @@ class RepositoryImp @Inject constructor(
 
     override fun savePeriods(periods: List<Period>) =
         flow {
-            val today = today()
-            val filteredPeriod = periods
-                .filter {
-                    it.time.date.isSameDay(today.date)
-                }
-            log("FilteredPeriod -> ${periods.size}")
-            val period = filteredPeriod
-                .onEach {
-                    val compareResult = it.time.time.copyWithResetSecond()
-                        .compareTo(today.time.copyWithResetSecond()) == 1
-                    log("${it.time.time.copyWithResetSecond()} ${today.time.copyWithResetSecond()} $compareResult")
-                }
-                .find {
-                    it.time.time.copyWithResetSecond()
-                        .compareTo(today.time.copyWithResetSecond()) == 1
-                }?.let { period ->
-                    sessionAlarmManager.invoke(
-                        period.taskId,
-                        period.time,
-                        period.taskId
-                    )
-                    log("period -> $period")
-                }
             emit(localDataSource.saveAll(*periods.toTypedArray()))
         }
+            .onCompletion {
+                scheduleFirstNotification(periods)
+            }
+
+    private fun scheduleFirstNotification(periods: List<Period>) {
+        val today = today()
+        val sameDayPeriods = periods.filter { it.time.date.isSameDay(today.date) }
+        val index = sameDayPeriods.indexOfFirst {
+            it.time.time.copyWithResetSecond().compareTo(today.time.copyWithResetSecond()) == 1
+        }
+        val period = sameDayPeriods.getOrNull(index) ?: return
+        log("$index")
+        sessionAlarmManager.invoke(
+            taskId = period.taskId,
+            time = period.time,
+            smokeCount = index
+        )
+    }
+
 
     override fun setNextAlarm() {
         val today = today()
         appScope.launch {
-            val task = localDataSource.tasks().find { it.taskTime.date.isSameDay(today.date) }
-                ?: return@launch
-            val periods = localDataSource.taskPeriodsById(task.taskId)
-            val period = periods.periods.find {
+            val sameDayTasks = localDataSource.tasks().find { it.taskTime.date.isSameDay(today.date) } ?: return@launch
+            val periods = localDataSource.taskPeriodsById(sameDayTasks.taskId)
+            val index = periods.periods.indexOfFirst {
                 it.time.time.copyWithResetSecond().compareTo(today.time.copyWithResetSecond()) == 1
             }
+            val period = periods.periods.getOrNull(index)?:return@launch
+            log("$index")
             sessionAlarmManager.invoke(
-                task.taskId,
-                period!!.time,
-                task.taskId
+                sameDayTasks.taskId,
+                period.time,
+                index
             )
         }
     }

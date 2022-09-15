@@ -2,6 +2,7 @@ package com.enciyo.domain
 
 import com.enciyo.shared.IoDispatcher
 import com.enciyo.shared.log
+import com.enciyo.shared.loge
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -20,7 +21,7 @@ abstract class UseCase<I, O>(private val ioDispatcher: CoroutineDispatcher) {
             .flowOn(ioDispatcher)
             .catch { t ->
                 val className = this::class.simpleName
-                log("$className -> ${t.message}")
+                loge("$className -> ${t.message}")
             }
 
     protected abstract fun execute(input: I): Flow<O>

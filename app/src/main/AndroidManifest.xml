@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.enciyo.jetquitsmoking">
 
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
     <application
         android:name=".JetQuitSmoking"
@@ -28,9 +28,13 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".notification.NotificationReceiver"
+        <receiver
+            android:name=".notification.NotificationReceiver"
             android:enabled="true"
             android:exported="false">
+            <intent-filter>
+                <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" />
+            </intent-filter>
         </receiver>
 
     </application>

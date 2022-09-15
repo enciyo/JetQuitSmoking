@@ -9,10 +9,10 @@ import com.enciyo.data.SessionAlarmManager
 import com.enciyo.jetquitsmoking.R
 import com.enciyo.shared.copy
 import com.enciyo.shared.epochSeconds
-import com.enciyo.shared.log
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.toLocalDateTime
+import java.time.Instant
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -27,8 +27,7 @@ class SessionAlarmManagerImp @Inject constructor(
         time: LocalDateTime,
         smokeCount: Int,
     ) {
-        log("SessionAlarmManagerImp: time -> $time")
-        val triggerAtMillis = time.copy(second = 0).epochSeconds
+        val date = Date.from(Instant.ofEpochSecond(time.copy(second = 0).epochSeconds))
         val intent = NotificationReceiver.getIntent(
             context,
             context.getString(R.string.reminder),
@@ -37,17 +36,19 @@ class SessionAlarmManagerImp @Inject constructor(
         val operation =
             PendingIntent.getBroadcast(
                 context,
-                taskId,
+                0,
                 intent,
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_IMMUTABLE else PendingIntent.FLAG_UPDATE_CURRENT
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
             )
 
+        alarmManager.cancel(operation)
         AlarmManagerCompat.setExactAndAllowWhileIdle(
             alarmManager,
             AlarmManager.RTC_WAKEUP,
-            triggerAtMillis,
+            date.time,
             operation
         )
     }
+
 }
 

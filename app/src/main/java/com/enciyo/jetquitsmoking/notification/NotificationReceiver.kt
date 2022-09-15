@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.provider.Settings
 import androidx.core.R
 import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
@@ -43,6 +44,7 @@ class NotificationReceiver : BroadcastReceiver() {
                     EXTRA_CONTENT_TITLE to contentTitle,
                     EXTRA_CONTENT_TEXT to contentText
                 ).let(::putExtras)
+                action = Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
             }
         }
     }
