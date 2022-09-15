@@ -2,7 +2,7 @@ package com.enciyo.jetquitsmoking.ui.splash
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.enciyo.data.repo.Repository
+import com.enciyo.domain.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(
-    private val accountRepository: Repository
+    private val accountRepository: Repository,
 ) : ViewModel() {
     companion object {
         private const val DELAY_SPLASH = 2000L

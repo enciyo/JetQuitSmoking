@@ -5,7 +5,7 @@ import androidx.room.Room
 import com.enciyo.data.AppDatabase
 import com.enciyo.data.dao.converters.LocalDateTimeConvert
 import com.enciyo.data.dao.converters.LocalDateTimeJsonAdapter
-import com.enciyo.data.repo.Repository
+import com.enciyo.domain.Repository
 import com.enciyo.data.repo.RepositoryImp
 import com.enciyo.data.source.LocalDataSource
 import com.enciyo.data.source.LocalDataSourceImp
@@ -62,7 +62,7 @@ interface DataModule {
 
     @Binds
     @Singleton
-    fun bindRepository(repositoryImp: RepositoryImp): Repository
+    fun bindRepository(repositoryImp: RepositoryImp): com.enciyo.domain.Repository
 
     @Binds
     @Singleton

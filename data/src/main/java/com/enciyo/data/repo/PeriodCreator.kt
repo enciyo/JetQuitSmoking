@@ -1,10 +1,8 @@
 package com.enciyo.data.repo
 
-import com.enciyo.data.entity.Period
-import com.enciyo.data.entity.Task
-import com.enciyo.data.entity.TaskWithPeriods
+import com.enciyo.data.entity.PeriodEntity
+import com.enciyo.data.entity.TaskEntity
 import com.enciyo.shared.IoDispatcher
-import com.enciyo.shared.currentSystemTimeZone
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.*
@@ -15,12 +13,10 @@ import javax.inject.Singleton
 class PeriodCreator @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
 ) {
-    private val clock = Clock.System.now().minus(1, DateTimeUnit.DAY, currentSystemTimeZone)
 
-    suspend operator fun invoke(task: Task): List<Period> = withContext(ioDispatcher) {
-        val newDate = clock.plus(task.taskId, DateTimeUnit.DAY, currentSystemTimeZone).toLocalDateTime(
-            currentSystemTimeZone)
-        val perMinute = RepositoryImp.DAILY_MINUTES / task.needSmokeCount
+    suspend operator fun invoke(taskEntity: TaskEntity): List<PeriodEntity> = withContext(ioDispatcher) {
+        val newDate = taskEntity.time
+        val perMinute = RepositoryImp.DAILY_MINUTES / taskEntity.needSmokeCount
         var startDate = LocalDateTime(
             hour = 8,
             minute = 1,
@@ -31,14 +27,14 @@ class PeriodCreator @Inject constructor(
         )
 
 
-        val taskPeriods = (1..task.needSmokeCount)
+        val taskPeriodEntities = (1..taskEntity.needSmokeCount)
             .map { id ->
-                Period(time = startDate, taskCreatorId = task.taskId).also {
+                PeriodEntity(time = startDate, taskCreatorId = taskEntity.taskId).also {
                     startDate.addMinute(perMinute).let { startDate = it }
                 }
             }
             .toList()
-        return@withContext taskPeriods
+        return@withContext taskPeriodEntities
     }
 
     private fun LocalDateTime.addMinute(minute: Int): LocalDateTime {

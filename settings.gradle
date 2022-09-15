@@ -16,3 +16,4 @@ rootProject.name = "JetQuitSmoking"
 include ':app'
 include ':data'
 include ':shared'
+include ':domain'

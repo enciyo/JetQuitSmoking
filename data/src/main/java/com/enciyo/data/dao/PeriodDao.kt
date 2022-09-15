@@ -4,23 +4,23 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import com.enciyo.data.entity.Period
+import com.enciyo.data.entity.PeriodEntity
 
 
 @Dao
 interface PeriodDao {
 
-    @Query("Select * from Period")
+    @Query("Select * from PeriodEntity")
     @SuppressWarnings("unUseless")
-    fun getPeriods(): List<Period>
+    fun getPeriods(): List<PeriodEntity>
 
     @Insert
-    fun insert(period: Period)
+    fun insert(periodEntity: PeriodEntity)
 
     @Insert
-    fun insert(vararg period: Period)
+    fun insert(vararg periodEntity: PeriodEntity)
 
     @Delete
-    fun delete(period: Period)
+    fun delete(periodEntity: PeriodEntity)
 
 }

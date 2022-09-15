@@ -2,20 +2,18 @@ package com.enciyo.jetquitsmoking.ui.register
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.enciyo.data.repo.Repository
-import com.enciyo.data.entity.Account
+import com.enciyo.domain.dto.Account
+import com.enciyo.domain.usecase.SaveAccountUseCase
 import com.enciyo.jetquitsmoking.component.VALIDATION_NAME
-import com.enciyo.jetquitsmoking.component.VALIDATION_NOT_EMPTY
 import com.enciyo.jetquitsmoking.util.validationState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
-    private val repository: Repository,
+    private val saveAccountUseCase: SaveAccountUseCase,
 ) : ViewModel() {
 
     val name = validationState(validator = VALIDATION_NAME)
@@ -45,17 +43,26 @@ class RegisterViewModel @Inject constructor(
     }
 
     private fun onSave() {
-        viewModelScope.launch {
-            _state.update { it.copy(isLoading = true) }
+        flow {
             val account = Account(
                 name = name.valueStateFlow.value,
                 cigarettesInAPack = countInAPack.valueStateFlow.value.toInt(),
                 cigarettesSmokedPerDay = smokedPerDay.valueStateFlow.value.toInt(),
                 pricePerPack = pricePerPack.valueStateFlow.value.toInt()
             )
-            repository.singUp(account)
-            _state.update { it.copy(isLoading = false, isLoggedIn = true) }
+            emit(account)
         }
+            .flatMapConcat(saveAccountUseCase::invoke)
+            .onStart {
+                _state.update { it.copy(isLoading = true) }
+            }
+            .onCompletion {
+                _state.update { it.copy(isLoading = false, isLoggedIn = true) }
+            }
+            .catch {
+                //Firebase Log
+            }
+            .launchIn(viewModelScope)
     }
 
 }

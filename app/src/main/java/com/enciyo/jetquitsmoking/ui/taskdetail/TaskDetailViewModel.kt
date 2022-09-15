@@ -3,23 +3,19 @@ package com.enciyo.jetquitsmoking.ui.taskdetail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.enciyo.data.entity.Period
-import com.enciyo.data.repo.Repository
-import com.enciyo.jetquitsmoking.Destinations
-import com.enciyo.jetquitsmoking.ui.home.MainUiState
+import com.enciyo.data.entity.PeriodEntity
+import com.enciyo.domain.dto.Period
 import com.enciyo.shared.DefaultDispatcher
 import com.enciyo.shared.today
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
 @HiltViewModel
 class TaskDetailViewModel @Inject constructor(
-    private val repository: Repository,
+    private val repository: com.enciyo.domain.Repository,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -35,16 +31,16 @@ class TaskDetailViewModel @Inject constructor(
                     taskPeriods.periods.indexOfFirst { it.time.time.compareTo(clock) == 1 }
                 TaskDetailUiState(taskPeriods.periods, activePeriodIndex)
             }
-            .filterNot { it.taskPeriods.isEmpty() }
+            .filterNot { it.taskPeriodEntities.isEmpty() }
             .flowOn(defaultDispatcher)
             .stateIn(
-                viewModelScope,
+                scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),
-                TaskDetailUiState()
+                initialValue = TaskDetailUiState()
             )
 }
 
 data class TaskDetailUiState(
-    val taskPeriods: List<Period> = listOf(),
+    val taskPeriodEntities: List<Period> = listOf(),
     val activePeriodIndex: Int = 0,
 )

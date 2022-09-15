@@ -2,21 +2,18 @@ package com.enciyo.jetquitsmoking.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.enciyo.data.entity.Account
-import com.enciyo.data.entity.Task
-import com.enciyo.data.repo.Repository
+import com.enciyo.data.entity.TaskEntity
+import com.enciyo.domain.dto.Task
 import com.enciyo.shared.today
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import javax.inject.Inject
 
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val repository: Repository,
+    private val repository: com.enciyo.domain.Repository,
 ) : ViewModel() {
 
     val state = combine(
@@ -32,7 +29,7 @@ class MainViewModel @Inject constructor(
 }
 
 data class MainUiState(
-    val tasks: List<Task> = listOf(),
+    val task: List<Task> = listOf(),
     val userName: String = "",
     val today: LocalDate = today().date,
 )

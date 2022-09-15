@@ -1,18 +1,16 @@
 package com.enciyo.data.entity
 
 import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.PrimaryKey
 import androidx.room.Relation
 
-data class TaskWithPeriods(
+data class TaskWithPeriodsEntity(
     @Embedded
-    val task: Task,
+    val taskEntity: TaskEntity,
     @Relation(
         parentColumn = "taskId",
         entityColumn = "taskCreatorId"
     )
-    val periods: List<Period>,
+    val periodEntities: List<PeriodEntity>,
 )
 
 

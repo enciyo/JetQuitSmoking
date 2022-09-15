@@ -7,12 +7,12 @@ import com.enciyo.data.dao.AccountDao
 import com.enciyo.data.dao.PeriodDao
 import com.enciyo.data.dao.TaskDao
 import com.enciyo.data.dao.converters.LocalDateTimeConvert
-import com.enciyo.data.entity.Account
-import com.enciyo.data.entity.Period
-import com.enciyo.data.entity.Task
+import com.enciyo.data.entity.AccountEntity
+import com.enciyo.data.entity.PeriodEntity
+import com.enciyo.data.entity.TaskEntity
 
 @Database(
-    entities = [Account::class, Task::class, Period::class],
+    entities = [AccountEntity::class, TaskEntity::class, PeriodEntity::class],
     exportSchema = false,
     version = 1
 )

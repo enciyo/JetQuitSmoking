@@ -10,7 +10,7 @@ import androidx.core.R
 import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
 import androidx.core.os.bundleOf
-import com.enciyo.data.repo.Repository
+import com.enciyo.domain.Repository
 import com.enciyo.jetquitsmoking.util.intent
 import com.enciyo.shared.ApplicationScope
 import kotlinx.coroutines.CoroutineScope
@@ -20,7 +20,7 @@ import javax.inject.Inject
 class NotificationReceiver : BroadcastReceiver() {
 
     @Inject
-    lateinit var repopsitory: Repository
+    lateinit var repopsitory: com.enciyo.domain.Repository
 
     @Inject
     @ApplicationScope

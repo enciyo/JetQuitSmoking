@@ -7,6 +7,7 @@ plugins {
 apply<plugins.AndroidProjectPlugin>()
 dependencies {
     implementation(project(":data"))
+    implementation(project(":domain"))
     implementation(project(":shared"))
     implementation(kotlin("reflect"))
 }

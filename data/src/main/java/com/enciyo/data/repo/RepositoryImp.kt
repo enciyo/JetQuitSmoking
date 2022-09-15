@@ -1,23 +1,22 @@
 package com.enciyo.data.repo
 
 import com.enciyo.data.SessionAlarmManager
-import com.enciyo.data.entity.Account
-import com.enciyo.data.entity.Period
-import com.enciyo.data.entity.Task
-import com.enciyo.data.entity.TaskWithPeriods
 import com.enciyo.data.source.LocalDataSource
+import com.enciyo.domain.Repository
+import com.enciyo.domain.dto.Account
+import com.enciyo.domain.dto.Period
+import com.enciyo.domain.dto.Task
+import com.enciyo.domain.dto.TaskWithPeriods
 import com.enciyo.shared.IoDispatcher
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class RepositoryImp @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val localDataSource: LocalDataSource,
     private val sessionAlarmManager: SessionAlarmManager,
-    private val taskCreator: TaskCreator,
-    private val periodCreator: PeriodCreator,
 ) : Repository {
 
     companion object {
@@ -25,53 +24,35 @@ class RepositoryImp @Inject constructor(
         const val DAILY_MINUTES = 900
     }
 
-    override suspend fun singUp(account: Account) {
-        localDataSource.save(account)
-        val tasks = createTasks()
-        tasks.forEach { task ->
-            val taskPeriod = createTaskPeriod(task)
-            if (task.taskId == 0 && taskPeriod.isNotEmpty()) {
-                val period = taskPeriod.first()
-                sessionAlarmManager(task.taskId, period.time, task.needSmokeCount)
-            }
-        }
-    }
-
     override suspend fun isLoggedIn(): Boolean =
         localDataSource.isLoggedIn()
 
 
-    private suspend fun createTasks(): List<Task> {
-        val account = localDataSource.account()
-        val smokedPerDay = account.cigarettesSmokedPerDay
-        val tasks = taskCreator(smokedPerDay)
-        localDataSource.saveAll(*tasks.toTypedArray())
-        return tasks
+    override fun saveAccount(account: Account) = flow {
+        emit(localDataSource.save(account))
     }
 
-
-    private suspend fun createTaskPeriod(task: Task): List<Period> {
-        if (task.needSmokeCount <= 0) return listOf()
-        val taskPeriod = periodCreator(task)
-        localDataSource.saveAll(*taskPeriod.toTypedArray())
-        return taskPeriod
+    override fun saveTasks(tasks: List<Task>) = flow {
+        emit(localDataSource.saveAll(*tasks.toTypedArray()))
     }
 
+    override suspend fun savePeriods(periods: List<Period>) {
+        localDataSource.saveAll(*periods.toTypedArray())
+    }
 
     override suspend fun setNextAlarm() {
         //TODO("Create alarm for next sesion")
     }
 
-    override fun tasks() = flow { emit(localDataSource.tasks()) }
+    override fun tasks(): Flow<List<Task>> =
+        flow { emit(localDataSource.tasks()) }
 
-    override fun taskPeriodsById(id: Int) = flow { emit(localDataSource.taskPeriodsById(id)) }
+    override fun taskPeriodsById(id: Int): Flow<TaskWithPeriods> =
+        flow { emit(localDataSource.taskPeriodsById(id)) }
 
 
-    override fun account() = flow { emit(localDataSource.account()) }
-
-    private suspend fun <T> onIoThread(block: suspend () -> T) =
-        withContext(ioDispatcher) { block.invoke() }
-
+    override fun account(): Flow<Account> =
+        flow { emit(localDataSource.account()) }
 }
 
 

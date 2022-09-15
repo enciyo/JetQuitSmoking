@@ -17,7 +17,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.enciyo.data.entity.Period
+import com.enciyo.data.entity.PeriodEntity
+import com.enciyo.domain.dto.Period
 import com.enciyo.jetquitsmoking.R
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
@@ -27,36 +28,47 @@ fun TaskDetailScreen(
     vm: TaskDetailViewModel = hiltViewModel(),
 ) {
     val state by vm.state.collectAsStateWithLifecycle()
-    val lazyListState = rememberLazyListState()
-
+    val scroll = rememberLazyListState()
     LaunchedEffect(state) {
-        lazyListState.scrollToItem(state.activePeriodIndex)
+        scroll.scrollToItem(state.activePeriodIndex)
     }
 
-    if (vm.needSmokeCount.toInt() > 0) {
-        LazyColumn(modifier = modifier, state = lazyListState) {
-            item {
-                Header(needSmokeCount = vm.needSmokeCount)
-            }
-            itemsIndexed(state.taskPeriods) { index, item ->
-                val isActive = remember { state.activePeriodIndex == index }
-                val color =
-                    if (isActive) MaterialTheme.colors.primary else MaterialTheme.colors.secondary
-                Item(period = item, color = color)
-            }
-
-        }
-    } else NoNeedSmokeToday()
-
-
+    Box(modifier = modifier) {
+        if (vm.needSmokeCount.toInt() > 0)
+            Periods(
+                scrollState = scroll,
+                needSmokeCount = vm.needSmokeCount,
+                period = state.taskPeriodEntities,
+                activePeriodIndex = state.activePeriodIndex
+            )
+        else
+            NoNeedSmokeToday()
+    }
 }
 
 @Composable
+private fun Periods(
+    modifier: Modifier = Modifier,
+    scrollState: LazyListState,
+    needSmokeCount: String,
+    period: List<Period>,
+    activePeriodIndex: Int,
+) {
+    LazyColumn(modifier = modifier, state = scrollState) {
+        item { Header(needSmokeCount = needSmokeCount) }
+        itemsIndexed(period) { index, item ->
+            val isActive = remember { activePeriodIndex == index }
+            val color = Color.Black
+
+            Item(period = item, color = color)
+        }
+    }
+}
+
+
+@Composable
 private fun NoNeedSmokeToday(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-    ) {
+    Box(modifier = modifier.fillMaxSize()) {
         Box(
             modifier = Modifier
                 .align(alignment = Alignment.Center)
@@ -69,8 +81,7 @@ private fun NoNeedSmokeToday(modifier: Modifier = Modifier) {
             Text(
                 text = stringResource(R.string.today_you_wont_smoke),
                 color = MaterialTheme.colors.onPrimary,
-                modifier = Modifier
-                    .align(Alignment.Center),
+                modifier = Modifier.align(Alignment.Center),
                 textAlign = TextAlign.Center
             )
         }
@@ -101,10 +112,7 @@ private fun Item(
     period: Period,
     color: Color,
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-    ) {
+    Column(modifier = modifier.fillMaxWidth()) {
         Box(
             modifier = Modifier
                 .size(width = 6.dp, height = 30.dp)

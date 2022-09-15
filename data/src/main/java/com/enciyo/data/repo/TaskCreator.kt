@@ -1,12 +1,11 @@
 package com.enciyo.data.repo
 
-import com.enciyo.data.entity.Task
+import com.enciyo.data.entity.TaskEntity
 import com.enciyo.shared.IoDispatcher
 import com.enciyo.shared.currentSystemTimeZone
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.*
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -16,11 +15,11 @@ class TaskCreator @Inject constructor(
 ) {
 
     private val clock = Clock.System.now()
-        .minus(1, DateTimeUnit.DAY, currentSystemTimeZone)
+        .minus(4, DateTimeUnit.DAY, currentSystemTimeZone)
 
     private val timeZone = currentSystemTimeZone
 
-    suspend operator fun invoke(smokedPerDay: Int): List<Task> = withContext(ioDispatcher) {
+    suspend operator fun invoke(smokedPerDay: Int): List<TaskEntity> = withContext(ioDispatcher) {
         var mod = smokedPerDay.mod(RepositoryImp.TASK_COUNT)
         val subtract = (smokedPerDay / RepositoryImp.TASK_COUNT)
         var wrappedSmoked = smokedPerDay
@@ -31,7 +30,7 @@ class TaskCreator @Inject constructor(
                 val date = clock.plus(id, DateTimeUnit.DAY, timeZone = timeZone)
                     .toLocalDateTime(timeZone)
                 wrappedSmoked = wrappedSmoked - subtract - extraForMod
-                Task(id, wrappedSmoked, date)
+                TaskEntity(id, wrappedSmoked, date)
             }
     }
 }

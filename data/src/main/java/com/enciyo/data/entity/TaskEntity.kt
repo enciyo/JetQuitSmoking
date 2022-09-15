@@ -7,7 +7,7 @@ import kotlinx.datetime.LocalDateTime
 @Entity(
     tableName = "task"
 )
-data class Task(
+data class TaskEntity(
     @PrimaryKey(autoGenerate = false)
     val taskId: Int,
     val needSmokeCount: Int,

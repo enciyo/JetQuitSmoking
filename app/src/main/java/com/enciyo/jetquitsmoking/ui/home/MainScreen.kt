@@ -24,16 +24,48 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.enciyo.data.entity.Task
+import com.enciyo.data.entity.TaskEntity
+import com.enciyo.domain.dto.Task
 import com.enciyo.jetquitsmoking.R
 import com.enciyo.jetquitsmoking.ui.theme.TASK_ICONS
 import com.enciyo.shared.isSameDay
+import com.enciyo.shared.today
 import kotlinx.datetime.LocalDate
-import java.util.concurrent.locks.Condition
+import kotlinx.datetime.LocalDateTime
 
 
 private val IMAGE_SIZE get() = 60.dp
 private val TASK_SIZE get() = 120.dp
+
+enum class TaskStatus {
+    DONE,
+    PROCESSING,
+    TODO;
+
+    companion object {
+        fun get(time: LocalDateTime): TaskStatus {
+            val compareResult = today().compareTo(time)
+            return if (compareResult == 1)
+                PROCESSING
+            else if (compareResult < 0)
+                TODO
+            else
+                DONE
+        }
+
+
+        fun get(time: LocalDate): TaskStatus {
+            val compareResult = today().date.compareTo(time)
+            return if (compareResult == 0)
+                PROCESSING
+            else if (compareResult < 0)
+                TODO
+            else
+                DONE
+        }
+    }
+}
+
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
@@ -48,7 +80,7 @@ fun MainScreen(
         columns = GridCells.Fixed(2)
     ) {
         header(state.userName)
-        taskItems(tasks = state.tasks, today = state.today, onTaskDetail = onTaskDetail)
+        taskItems(taskEntities = state.task, today = state.today, onTaskDetail = onTaskDetail)
     }
     LocalTextInputService.current?.hideSoftwareKeyboard()
 }
@@ -61,16 +93,15 @@ private fun LazyGridScope.header(name: String) {
 }
 
 private fun LazyGridScope.taskItems(
-    tasks: List<Task>,
+    taskEntities: List<Task>,
     today: LocalDate,
     onTaskDetail: (Task) -> Unit,
 ) = itemsIndexed(
-    items = tasks,
+    items = taskEntities,
     span = { index, _ -> GridItemSpan(if (index == 0) maxCurrentLineSpan else 1) },
     key = { _, item -> item.taskId }) { index, item ->
-    val isActive = remember { today.isSameDay(item.time.date) }
-    val color =
-        if (isActive) MaterialTheme.colors.primary else MaterialTheme.colors.secondary
+    val isActive = today.isSameDay(item.taskTime.date)
+    val color = Color.Black
     Task(
         item = item,
         drawableRes = TASK_ICONS[index],
