@@ -70,7 +70,12 @@ private fun LazyGridScope.taskItems(
     span = { index, _ -> GridItemSpan(if (index == 0) maxCurrentLineSpan else 1) },
     key = { _, item -> item.taskId }) { index, item ->
     val isActive = today.isSameDay(item.taskTime.date)
-    val color = if (isActive) MaterialTheme.colors.primary else Color.Black
+
+    val compareResult = today.compareTo(item.taskTime.date)
+    val color =
+        if (compareResult == 0) MaterialTheme.colors.primary
+        else if (compareResult < 0) MaterialTheme.colors.secondary
+        else Color.Black
     Task(
         item = item,
         drawableRes = TASK_ICONS[index],

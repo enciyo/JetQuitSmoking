@@ -2,12 +2,17 @@ package com.enciyo.jetquitsmoking.ui.taskdetail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,9 +22,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.enciyo.data.entity.PeriodEntity
 import com.enciyo.domain.dto.Period
 import com.enciyo.jetquitsmoking.R
+import com.enciyo.shared.today
+import kotlinx.datetime.LocalTime
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
@@ -54,11 +60,15 @@ private fun Periods(
     period: List<Period>,
     activePeriodIndex: Int,
 ) {
+    val today = today()
     LazyColumn(modifier = modifier, state = scrollState) {
         item { Header(needSmokeCount = needSmokeCount) }
         itemsIndexed(period) { index, item ->
-            val isActive = remember { activePeriodIndex == index }
-            val color = Color.Black
+            val compareResult = today.time.compareToByIgnoreSeconds(item.time.time)
+            val color =
+                if (compareResult == 0) MaterialTheme.colors.primary
+                else if (compareResult < 0) MaterialTheme.colors.secondary
+                else Color.Black
 
             Item(period = item, color = color)
         }
@@ -133,4 +143,16 @@ private fun Item(
             )
         }
     }
+}
+
+fun LocalTime.compareToByIgnoreSeconds(toTime: LocalTime): Int {
+    val wrappedTime = LocalTime(
+        hour = this.hour,
+        minute = this.minute
+    )
+    val wrappedToTime = LocalTime(
+        hour = toTime.hour,
+        toTime.minute
+    )
+    return wrappedTime.compareTo(wrappedToTime)
 }
