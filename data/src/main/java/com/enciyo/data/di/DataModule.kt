@@ -33,7 +33,7 @@ interface DataModule {
         ) =
             Room.databaseBuilder(context,
                 AppDatabase::class.java,
-                "app_name_v1.1.${UUID.randomUUID()}")
+                "app_name_v1.1")
                 .addTypeConverter(LocalDateTimeConvert())
                 .fallbackToDestructiveMigration()
                 .build()

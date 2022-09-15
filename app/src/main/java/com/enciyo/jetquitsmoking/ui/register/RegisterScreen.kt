@@ -27,6 +27,7 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.enciyo.jetquitsmoking.BuildConfig
 import com.enciyo.jetquitsmoking.R
 import com.enciyo.jetquitsmoking.component.JqsTextValidationField
 import com.enciyo.jetquitsmoking.ui.theme.JetQuitSmokingTheme
@@ -48,11 +49,11 @@ fun RegisterScreen(
     }
 
     LaunchedEffect(Unit){
-        vm.name.onValueChange.invoke("name")
+        /*vm.name.onValueChange.invoke("name")
         vm.pricePerPack.onValueChange.invoke("2")
         vm.countInAPack.onValueChange.invoke("2")
         vm.smokedPerDay.onValueChange.invoke("900")
-        vm.onEvent(RegisterUiEvent.OnSave)
+        vm.onEvent(RegisterUiEvent.OnSave)*/
     }
 
 

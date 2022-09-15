@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
+import android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
 import androidx.core.R
 import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
@@ -50,6 +51,7 @@ class NotificationReceiver : BroadcastReceiver() {
     }
 
     override fun onReceive(context: Context, intent: Intent) {
+        if (intent.action != ACTION_REQUEST_SCHEDULE_EXACT_ALARM) return
         val manager = context.getSystemService<NotificationManager>() ?: return
         val contentText = intent.extras?.getString(EXTRA_CONTENT_TEXT) ?: return
         val contentTitle = intent.extras?.getString(EXTRA_CONTENT_TITLE) ?: return
@@ -76,3 +78,5 @@ class NotificationReceiver : BroadcastReceiver() {
         }
     }
 }
+
+
