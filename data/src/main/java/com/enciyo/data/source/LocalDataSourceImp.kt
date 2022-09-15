@@ -41,8 +41,12 @@ class LocalDataSourceImp @Inject constructor(
 
     }
 
-    override suspend fun saveAll(vararg period: Period) = onIoThread {
-        periodDao.insert(*period.map { it.toEntity() }.toTypedArray())
+    override suspend fun saveAll(vararg period: Period): List<Period> = onIoThread {
+        val periods = period.map { it.toEntity() }.toTypedArray()
+        val ids = periodDao.insert(*periods)
+        if (ids.contains(-1L).not())
+            period.toList()
+        else throw IllegalStateException("Can't save periods")
     }
 
     override suspend fun saveAll(vararg task: Task): List<Task> = onIoThread {

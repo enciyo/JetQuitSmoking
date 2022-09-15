@@ -18,7 +18,7 @@ interface PeriodDao {
     fun insert(periodEntity: PeriodEntity)
 
     @Insert
-    fun insert(vararg periodEntity: PeriodEntity)
+    fun insert(vararg periodEntity: PeriodEntity) : List<Long>
 
     @Delete
     fun delete(periodEntity: PeriodEntity)

@@ -1,6 +1,7 @@
 package com.enciyo.domain.usecase
 
 import com.enciyo.domain.UseCase
+import com.enciyo.domain.dto.Task
 import com.enciyo.domain.dto.TaskWithPeriods
 import com.enciyo.shared.IoDispatcher
 import kotlinx.coroutines.CoroutineDispatcher
@@ -17,14 +18,12 @@ class CreateTaskAndPeriodsUseCase @Inject constructor(
 ) : UseCase<Int, List<TaskWithPeriods>>(ioDispatcher) {
     override fun execute(input: Int): Flow<List<TaskWithPeriods>> =
         createTaskUseCase.invoke(input)
-            .map { tasks ->
-                tasks.map { task ->
-                    TaskWithPeriods(
-                        task = task,
-                        periods = createPeriodUseCase.invoke(task).first()
-                    )
-                }
-            }
+            .map { it.transform() }
+
+    private suspend fun List<Task>.transform() = map {
+        val periods = createPeriodUseCase.invoke(it).first()
+        TaskWithPeriods(it, periods)
+    }
 
 
 }

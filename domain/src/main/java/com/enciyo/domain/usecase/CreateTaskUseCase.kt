@@ -19,7 +19,7 @@ class CreateTaskUseCase @Inject constructor(
     private val repository: Repository,
 ) : UseCase<Int, List<Task>>(ioDispatcher) {
 
-    private val clock = Clock.System.now()
+    private val now = Clock.System.now()
         .minus(4, DateTimeUnit.DAY, currentSystemTimeZone)
     private val timeZone = currentSystemTimeZone
 
@@ -33,13 +33,14 @@ class CreateTaskUseCase @Inject constructor(
             var mod = smokedPerDay.mod(TASK_COUNT)
             val div = smokedPerDay.div(TASK_COUNT)
             var mutableSmokedPerDay = smokedPerDay
+            var date = now
             return@withContext (TASK_COUNT downTo 1)
                 .map {
                     val extras = (if (mod > 0) 1 else 0).also { mod -= 1 }
                     val id = (TASK_COUNT + 1) - it
-                    val date = clock.plusDay(1).toLocalDateTime(timeZone)
+                    date = date.plusDay(1)
                     mutableSmokedPerDay = mutableSmokedPerDay - div - extras
-                    Task(id, mutableSmokedPerDay, date)
+                    Task(id, mutableSmokedPerDay, date.toLocalDateTime(timeZone))
                 }
         }
 

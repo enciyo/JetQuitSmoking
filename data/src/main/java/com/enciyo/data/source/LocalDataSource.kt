@@ -12,7 +12,7 @@ interface LocalDataSource {
     suspend fun isLoggedIn(): Boolean
     suspend fun save(task: Task) : Task
     suspend fun saveAll(vararg task: Task) : List<Task>
-    suspend fun saveAll(vararg period: Period)
+    suspend fun saveAll(vararg period: Period) : List<Period>
     suspend fun tasks(): List<Task>
     suspend fun taskPeriodsById(id: Int): TaskWithPeriods
 }

@@ -19,40 +19,24 @@ class RepositoryImp @Inject constructor(
     private val sessionAlarmManager: SessionAlarmManager,
 ) : Repository {
 
-    companion object {
-        const val TASK_COUNT = 21
-        const val DAILY_MINUTES = 900
-    }
+    override fun isLoggedIn() = flow { emit(localDataSource.isLoggedIn()) }
 
-    override suspend fun isLoggedIn(): Boolean =
-        localDataSource.isLoggedIn()
+    override fun saveAccount(account: Account) = flow { emit(localDataSource.save(account)) }
 
+    override fun saveTasks(tasks: List<Task>) =
+        flow { emit(localDataSource.saveAll(*tasks.toTypedArray())) }
 
-    override fun saveAccount(account: Account) = flow {
-        emit(localDataSource.save(account))
-    }
+    override fun savePeriods(periods: List<Period>) =
+        flow { emit(localDataSource.saveAll(*periods.toTypedArray())) }
 
-    override fun saveTasks(tasks: List<Task>) = flow {
-        emit(localDataSource.saveAll(*tasks.toTypedArray()))
-    }
+    override suspend fun setNextAlarm() {}
 
-    override suspend fun savePeriods(periods: List<Period>) {
-        localDataSource.saveAll(*periods.toTypedArray())
-    }
-
-    override suspend fun setNextAlarm() {
-        //TODO("Create alarm for next sesion")
-    }
-
-    override fun tasks(): Flow<List<Task>> =
-        flow { emit(localDataSource.tasks()) }
+    override fun tasks(): Flow<List<Task>> = flow { emit(localDataSource.tasks()) }
 
     override fun taskPeriodsById(id: Int): Flow<TaskWithPeriods> =
         flow { emit(localDataSource.taskPeriodsById(id)) }
 
-
-    override fun account(): Flow<Account> =
-        flow { emit(localDataSource.account()) }
+    override fun account(): Flow<Account> = flow { emit(localDataSource.account()) }
 }
 
 

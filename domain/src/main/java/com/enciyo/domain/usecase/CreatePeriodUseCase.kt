@@ -7,6 +7,7 @@ import com.enciyo.domain.dto.Task
 import com.enciyo.shared.IoDispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDateTime
@@ -20,14 +21,13 @@ class CreatePeriodUseCase @Inject constructor(
     private val repository: Repository,
 ) : UseCase<Task, List<Period>>(ioDispatcher) {
     override fun execute(input: Task): Flow<List<Period>> = flow {
-        val periods = createPeriods(
-            input.taskTime,
-            input.needSmokeCount,
-            input.taskId
-        )
-        repository.savePeriods(periods)
-        emit(periods)
+        emit(createPeriods(
+            startedDate = input.taskTime,
+            needSmokeCount = input.needSmokeCount,
+            taskId = input.taskId
+        ))
     }
+        .flatMapConcat(repository::savePeriods)
 
     private suspend fun createPeriods(
         startedDate: LocalDateTime,

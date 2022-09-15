@@ -2,23 +2,27 @@ package com.enciyo.jetquitsmoking.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.enciyo.data.entity.TaskEntity
 import com.enciyo.domain.dto.Task
+import com.enciyo.domain.usecase.GetTasksUseCase
+import com.enciyo.domain.usecase.GetUsernameUseCase
 import com.enciyo.shared.today
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.datetime.LocalDate
 import javax.inject.Inject
 
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val repository: com.enciyo.domain.Repository,
+    private val getTasksUseCase: GetTasksUseCase,
+    private val getUsernameUseCase: GetUsernameUseCase,
 ) : ViewModel() {
 
     val state = combine(
-        flow = repository.tasks(),
-        flow2 = repository.account().map { it.name },
+        flow = getTasksUseCase.invoke(Unit),
+        flow2 = getUsernameUseCase.invoke(Unit),
         transform = ::MainUiState
     )
         .stateIn(

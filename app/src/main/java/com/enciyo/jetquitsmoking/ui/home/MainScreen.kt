@@ -12,7 +12,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,48 +26,15 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.enciyo.data.entity.TaskEntity
 import com.enciyo.domain.dto.Task
 import com.enciyo.jetquitsmoking.R
 import com.enciyo.jetquitsmoking.ui.theme.TASK_ICONS
 import com.enciyo.shared.isSameDay
-import com.enciyo.shared.today
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
 
 
 private val IMAGE_SIZE get() = 60.dp
 private val TASK_SIZE get() = 120.dp
-
-enum class TaskStatus {
-    DONE,
-    PROCESSING,
-    TODO;
-
-    companion object {
-        fun get(time: LocalDateTime): TaskStatus {
-            val compareResult = today().compareTo(time)
-            return if (compareResult == 1)
-                PROCESSING
-            else if (compareResult < 0)
-                TODO
-            else
-                DONE
-        }
-
-
-        fun get(time: LocalDate): TaskStatus {
-            val compareResult = today().date.compareTo(time)
-            return if (compareResult == 0)
-                PROCESSING
-            else if (compareResult < 0)
-                TODO
-            else
-                DONE
-        }
-    }
-}
-
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
@@ -101,7 +70,7 @@ private fun LazyGridScope.taskItems(
     span = { index, _ -> GridItemSpan(if (index == 0) maxCurrentLineSpan else 1) },
     key = { _, item -> item.taskId }) { index, item ->
     val isActive = today.isSameDay(item.taskTime.date)
-    val color = Color.Black
+    val color = if (isActive) MaterialTheme.colors.primary else Color.Black
     Task(
         item = item,
         drawableRes = TASK_ICONS[index],

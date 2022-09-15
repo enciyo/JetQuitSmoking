@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.enciyo.data.entity.PeriodEntity
 import com.enciyo.domain.dto.Period
+import com.enciyo.domain.usecase.GetTaskDetailByIdUseCase
 import com.enciyo.shared.DefaultDispatcher
 import com.enciyo.shared.today
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TaskDetailViewModel @Inject constructor(
-    private val repository: com.enciyo.domain.Repository,
+    private val getTaskDetailByIdUseCase: GetTaskDetailByIdUseCase,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -25,7 +26,7 @@ class TaskDetailViewModel @Inject constructor(
     val needSmokeCount: String = checkNotNull(savedStateHandle["needSmokeCount"])
 
     val state =
-        repository.taskPeriodsById(taskId.toInt())
+        getTaskDetailByIdUseCase.invoke(taskId.toInt())
             .map { taskPeriods ->
                 val activePeriodIndex =
                     taskPeriods.periods.indexOfFirst { it.time.time.compareTo(clock) == 1 }
