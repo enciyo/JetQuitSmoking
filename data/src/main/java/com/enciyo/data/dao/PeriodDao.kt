@@ -10,7 +10,7 @@ import com.enciyo.data.entity.PeriodEntity
 @Dao
 interface PeriodDao {
 
-    @Query("Select * from PeriodEntity")
+    @Query("Select * from period")
     @SuppressWarnings("unUseless")
     fun getPeriods(): List<PeriodEntity>
 
@@ -18,7 +18,7 @@ interface PeriodDao {
     fun insert(periodEntity: PeriodEntity)
 
     @Insert
-    fun insert(vararg periodEntity: PeriodEntity) : List<Long>
+    fun insert(vararg periodEntity: PeriodEntity): List<Long>
 
     @Delete
     fun delete(periodEntity: PeriodEntity)
