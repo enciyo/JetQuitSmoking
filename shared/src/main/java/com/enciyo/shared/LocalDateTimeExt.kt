@@ -15,4 +15,16 @@ val LocalDateTime.epochSeconds
         .epochSeconds
 
 
+fun LocalTime.copyWithResetSecond() = copy(second = 0)
 
+fun LocalTime.copy(
+    hour: Int? = null,
+    minute: Int? = null,
+    second: Int? = null,
+    nanoSeconds: Int? = null,
+) = LocalTime(
+    hour = hour ?: this.hour,
+    minute = minute ?: this.minute,
+    second = second ?: this.second,
+    nanosecond = nanoSeconds ?: this.nanosecond
+)

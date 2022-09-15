@@ -24,8 +24,8 @@ import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.enciyo.domain.dto.Period
 import com.enciyo.jetquitsmoking.R
+import com.enciyo.shared.copyWithResetSecond
 import com.enciyo.shared.today
-import kotlinx.datetime.LocalTime
 
 @OptIn(ExperimentalLifecycleComposeApi::class)
 @Composable
@@ -45,7 +45,6 @@ fun TaskDetailScreen(
                 scrollState = scroll,
                 needSmokeCount = vm.needSmokeCount,
                 period = state.taskPeriodEntities,
-                activePeriodIndex = state.activePeriodIndex
             )
         else
             NoNeedSmokeToday()
@@ -58,13 +57,13 @@ private fun Periods(
     scrollState: LazyListState,
     needSmokeCount: String,
     period: List<Period>,
-    activePeriodIndex: Int,
 ) {
     val today = today()
     LazyColumn(modifier = modifier, state = scrollState) {
         item { Header(needSmokeCount = needSmokeCount) }
-        itemsIndexed(period) { index, item ->
-            val compareResult = today.time.compareToByIgnoreSeconds(item.time.time)
+        itemsIndexed(period) { _, item ->
+            val compareResult =
+                today.time.copyWithResetSecond().compareTo(item.time.time.copyWithResetSecond())
             val color =
                 if (compareResult == 0) MaterialTheme.colors.primary
                 else if (compareResult < 0) MaterialTheme.colors.secondary
@@ -145,14 +144,3 @@ private fun Item(
     }
 }
 
-fun LocalTime.compareToByIgnoreSeconds(toTime: LocalTime): Int {
-    val wrappedTime = LocalTime(
-        hour = this.hour,
-        minute = this.minute
-    )
-    val wrappedToTime = LocalTime(
-        hour = toTime.hour,
-        toTime.minute
-    )
-    return wrappedTime.compareTo(wrappedToTime)
-}
