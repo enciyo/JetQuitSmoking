@@ -7,7 +7,9 @@ import android.os.Build
 import androidx.core.app.AlarmManagerCompat
 import com.enciyo.data.SessionAlarmManager
 import com.enciyo.jetquitsmoking.R
+import com.enciyo.shared.copy
 import com.enciyo.shared.epochSeconds
+import com.enciyo.shared.log
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.toLocalDateTime
@@ -25,7 +27,8 @@ class SessionAlarmManagerImp @Inject constructor(
         time: LocalDateTime,
         smokeCount: Int,
     ) {
-        val triggerAtMillis = time.epochSeconds
+        log("SessionAlarmManagerImp: time -> $time")
+        val triggerAtMillis = time.copy(second = 0).epochSeconds
         val intent = NotificationReceiver.getIntent(
             context,
             context.getString(R.string.reminder),

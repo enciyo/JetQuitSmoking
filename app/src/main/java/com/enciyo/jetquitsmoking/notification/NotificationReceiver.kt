@@ -13,14 +13,16 @@ import androidx.core.os.bundleOf
 import com.enciyo.domain.Repository
 import com.enciyo.jetquitsmoking.util.intent
 import com.enciyo.shared.ApplicationScope
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class NotificationReceiver : BroadcastReceiver() {
 
     @Inject
-    lateinit var repopsitory: com.enciyo.domain.Repository
+    lateinit var repopsitory: Repository
 
     @Inject
     @ApplicationScope

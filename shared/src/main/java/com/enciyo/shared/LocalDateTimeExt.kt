@@ -28,3 +28,21 @@ fun LocalTime.copy(
     second = second ?: this.second,
     nanosecond = nanoSeconds ?: this.nanosecond
 )
+
+fun LocalDateTime.copy(
+    hour: Int? = null,
+    minute: Int? = null,
+    second: Int? = null,
+    nanoSeconds: Int? = null,
+    year: Int? = null,
+    month: Month? = null,
+    dayOfMonth: Int? = null,
+) = LocalDateTime(
+    hour = hour ?: this.hour,
+    minute = minute ?: this.minute,
+    second = second ?: this.second,
+    nanosecond = nanoSeconds ?: this.nanosecond,
+    year = year ?: this.year,
+    month = month ?: this.month,
+    dayOfMonth = dayOfMonth ?: this.dayOfMonth
+)

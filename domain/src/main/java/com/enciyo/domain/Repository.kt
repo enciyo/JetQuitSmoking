@@ -13,7 +13,7 @@ interface Repository {
     fun savePeriods(periods: List<Period>): Flow<List<Period>>
     fun tasks(): Flow<List<Task>>
     fun taskPeriodsById(id: Int): Flow<TaskWithPeriods>
-    suspend fun setNextAlarm()
+    fun setNextAlarm()
     fun account(): Flow<Account>
 
 }

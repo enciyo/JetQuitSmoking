@@ -4,6 +4,7 @@ import com.enciyo.domain.Repository
 import com.enciyo.domain.UseCase
 import com.enciyo.domain.dto.Task
 import com.enciyo.shared.IoDispatcher
+import com.enciyo.shared.copy
 import com.enciyo.shared.currentSystemTimeZone
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.*
@@ -40,7 +41,7 @@ class CreateTaskUseCase @Inject constructor(
                     val id = (TASK_COUNT + 1) - it
                     date = date.plusDay(1)
                     mutableSmokedPerDay = mutableSmokedPerDay - div - extras
-                    Task(id, mutableSmokedPerDay, date.toLocalDateTime(timeZone))
+                    Task(id, mutableSmokedPerDay, date.toLocalDateTime(timeZone).copy(second = 0, nanoSeconds = 0))
                 }
         }
 
